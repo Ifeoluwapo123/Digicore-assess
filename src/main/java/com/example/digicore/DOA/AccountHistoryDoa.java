@@ -23,7 +23,7 @@ public class  AccountHistoryDoa implements Dao<AccountHistory, Map>{
 
     @Override
     public AccountHistory save(AccountHistory accountHistory) {
-        List<AcctHistoryResponse> info = new ArrayList<>();
+
 
         AcctHistoryResponse acctHistoryResponse = new AcctHistoryResponse();
         acctHistoryResponse.setAccountBalance(accountHistory.getAccountBalance());
@@ -38,6 +38,9 @@ public class  AccountHistoryDoa implements Dao<AccountHistory, Map>{
             accountInformation.put(accountHistory.getAccountNumber(),
                    info2);
         }else{
+
+            List<AcctHistoryResponse> info = new ArrayList<>();
+            info.add(acctHistoryResponse);
             accountInformation.put(accountHistory.getAccountNumber(),
                     info);
         }

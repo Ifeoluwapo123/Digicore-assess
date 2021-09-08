@@ -1,6 +1,7 @@
 package com.example.digicore.service.serviceImplementation;
 
 import com.example.digicore.DOA.AccountDao;
+import com.example.digicore.DOA.AccountHistoryDoa;
 import com.example.digicore.dto.request.CreateAccountRequest;
 import com.example.digicore.dto.request.LoginRequest;
 import com.example.digicore.dto.response.CreateAccountResponse;
@@ -8,6 +9,7 @@ import com.example.digicore.dto.response.LoginResponse;
 import com.example.digicore.exception.ApiBadRequestException;
 import com.example.digicore.exception.ApiConflictException;
 import com.example.digicore.model.Account;
+import com.example.digicore.model.AccountHistory;
 import com.example.digicore.security.JwtUtils;
 import com.example.digicore.security.MyUserDetailsService;
 import com.example.digicore.service.AuthService;
@@ -22,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
@@ -34,6 +38,10 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtils jwtUtils;
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private AccountHistoryDoa accountHistoryDoa;
+//    @Autowired
+//    private AccountHistory accountHistory;
 
     public ResponseEntity<CreateAccountResponse> createAccount(CreateAccountRequest accountRequest) {
 
@@ -56,6 +64,18 @@ public class AuthServiceImpl implements AuthService {
         account.setBalance(accountRequest.getInitialDeposit());
 
         accountDao.save(account);
+
+        AccountHistory accountHistory = new AccountHistory();
+
+        accountHistory.setAccountBalance(account.getBalance());
+        accountHistory.setTransactionType("Initial Deposit");
+        accountHistory.setNarration("Deposit");
+        accountHistory.setTransactionDate(new Date());
+        accountHistory.setAmount(account.getBalance());
+        accountHistory.setAccountNumber(accountNumber);
+
+        accountHistoryDoa.save(accountHistory);
+
         CreateAccountResponse res = new CreateAccountResponse();
         res.setMessage("Successfully created account");
         res.setSuccess(true);
